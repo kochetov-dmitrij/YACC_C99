@@ -10,4 +10,4 @@ Compile and link the two C language source files:
 - `gcc yacc.tab.c lex.yy.c -o parser`
 
 Run the program
-- `./compiler`
+- `./parser`
