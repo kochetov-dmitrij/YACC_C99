@@ -1,7 +1,7 @@
 # YACC_C99
 
 Process the yacc grammar file
-- `yacc -d yacc.y`
+- `yacc -d yacc.y -o yacc.tab.c`
 
 Process the lex specification file:
 - `lex lex.l`
