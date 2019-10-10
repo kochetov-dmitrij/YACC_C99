@@ -1,3 +1,13 @@
+#include <cstdio>
+#include <iostream>
+#include <string>
+#include "string.h"
+
+#include "node.h"
+
+#define YYSTYPE Node*
+%}
+
 %token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
@@ -11,14 +21,15 @@
 
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
 
+
 %start translation_unit
 %%
 
 primary_expression
-	: IDENTIFIER
-	| CONSTANT
-	| STRING_LITERAL
-	| '(' expression ')'
+	: IDENTIFIER {$$ = new Node("Identifier", $1)}
+	| CONSTANT {$$ = new Node("Constant", $1)}
+	| STRING_LITERAL {$$ = new Node("String literal", $1)}
+	| '(' expression ')' {$$ = new Node("Expression", $1)}
 	;
 
 postfix_expression
@@ -58,34 +69,34 @@ unary_operator
 	;
 
 cast_expression
-	: unary_expression
-	| '(' type_name ')' cast_expression
+	: unary_expression {$$ = $1}
+	| '(' type_name ')' cast_expression {$$ = new Node("Cast", $1)}
 	;
 
 multiplicative_expression
 	: cast_expression
-	| multiplicative_expression '*' cast_expression
-	| multiplicative_expression '/' cast_expression
-	| multiplicative_expression '%' cast_expression
+	| multiplicative_expression '*' cast_expression {$$ = new Node("Multiply", $1, $2)}
+	| multiplicative_expression '/' cast_expression {$$ = new Node("Divide", $1, $2)}
+	| multiplicative_expression '%' cast_expression {$$ = new Node("Modulo", $1, $2)}
 	;
 
 additive_expression
 	: multiplicative_expression
-	| additive_expression '+' multiplicative_expression
-	| additive_expression '-' multiplicative_expression
+	| additive_expression '+' multiplicative_expression {$$ = new Node("Add", $1, $2)}
+	| additive_expression '-' multiplicative_expression {$$ = new Node("Sub", $1, $2}
 	;
 
 shift_expression
 	: additive_expression
-	| shift_expression LEFT_OP additive_expression
-	| shift_expression RIGHT_OP additive_expression
+	| shift_expression LEFT_OP additive_expression {$$ = new Node("Left shift", $1, $2)}
+	| shift_expression RIGHT_OP additive_expression {$$ = new Node("Right shift", $1, $2)}
 	;
 
 relational_expression
 	: shift_expression
-	| relational_expression '<' shift_expression
-	| relational_expression '>' shift_expression
-	| relational_expression LE_OP shift_expression
+	| relational_expression '<' shift_expression {$$ = new Node("Less", $1, $2)}
+	| relational_expression '>' shift_expression {$$ = new Node("More", $1, $2)}
+	| relational_expression LE_OP shift_expression 
 	| relational_expression GE_OP shift_expression
 	;
 
