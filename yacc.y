@@ -292,7 +292,7 @@ function_specifier
 
 declarator
 	: pointer direct_declarator {$$ = new Node("Delcarator", $1, $2);}
-	| direct_declarator {$$ = $1;}
+	| direct_declarator {$$ = new Node("Direct declarator", $1);}
 	;
 
 
