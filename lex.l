@@ -1,11 +1,3 @@
-D			[0-9]
-L			[a-zA-Z_]
-H			[a-fA-F0-9]
-E			([Ee][+-]?{D}+)
-P                       ([Pp][+-]?{D}+)
-FS			(f|F|l|L)
-IS                      ((u|U)|(u|U)?(l|L|ll|LL)|(l|L|ll|LL)(u|U))
-
 %{
 #include <stdio.h>
 #include "yacc.hpp"
@@ -16,10 +8,17 @@ void comment(void);
 extern void yyerror(const char *);
 %}
 
-%%
-"/*"			{ comment(); }
-"//"[^\n]*              { /* consume //-comment */ }
+D			[0-9]
+L			[a-zA-Z_]
+H			[a-fA-F0-9]
+E			([Ee][+-]?{D}+)
+P                       ([Pp][+-]?{D}+)
+FS			(f|F|l|L)
+IS                      ((u|U)|(u|U)?(l|L|ll|LL)|(l|L|ll|LL)(u|U))
 
+%%
+"/*"            { comment(); }
+"//"[^\n]*      { }
 
 "auto"			{ count(); return(AUTO); }
 "_Bool"			{ count(); return(BOOL); }
@@ -39,7 +38,7 @@ extern void yyerror(const char *);
 "for"			{ count(); return(FOR); }
 "goto"			{ count(); return(GOTO); }
 "if"			{ count(); return(IF); }
-"_Imaginary"		{ count(); return(IMAGINARY); }
+"_Imaginary"    { count(); return(IMAGINARY); }
 "inline"		{ count(); return(INLINE); }
 "int"			{ count(); return(INT); }
 "long"			{ count(); return(LONG); }
@@ -66,12 +65,12 @@ extern void yyerror(const char *);
 [1-9]{D}*{IS}?		{ count(); return(CONSTANT); }
 L?'(\\.|[^\\'\n])+'	{ count(); return(CONSTANT); }
 
-{D}+{E}{FS}?		{ count(); return(CONSTANT); }
-{D}*"."{D}+{E}?{FS}?	{ count(); return(CONSTANT); }
-{D}+"."{D}*{E}?{FS}?	{ count(); return(CONSTANT); }
-0[xX]{H}+{P}{FS}?	{ count(); return(CONSTANT); }
-0[xX]{H}*"."{H}+{P}?{FS}?     { count(); return(CONSTANT); }
-0[xX]{H}+"."{H}*{P}?{FS}?     { count(); return(CONSTANT); }
+{D}+{E}{FS}?		        { count(); return(CONSTANT); }
+{D}*"."{D}+{E}?{FS}?	    { count(); return(CONSTANT); }
+{D}+"."{D}*{E}?{FS}?	    { count(); return(CONSTANT); }
+0[xX]{H}+{P}{FS}?	        { count(); return(CONSTANT); }
+0[xX]{H}*"."{H}+{P}?{FS}?   { count(); return(CONSTANT); }
+0[xX]{H}+"."{H}*{P}?{FS}?   { count(); return(CONSTANT); }
 
 
 L?\"(\\.|[^\\"\n])*\"	{ count(); return(STRING_LITERAL); }
@@ -98,33 +97,33 @@ L?\"(\\.|[^\\"\n])*\"	{ count(); return(STRING_LITERAL); }
 ">="			{ count(); return(GE_OP); }
 "=="			{ count(); return(EQ_OP); }
 "!="			{ count(); return(NE_OP); }
-";"			{ count(); return(';'); }
+";"		    	{ count(); return(';'); }
 ("{"|"<%")		{ count(); return('{'); }
 ("}"|"%>")		{ count(); return('}'); }
-","			{ count(); return(','); }
-":"			{ count(); return(':'); }
-"="			{ count(); return('='); }
-"("			{ count(); return('('); }
-")"			{ count(); return(')'); }
+","		    	{ count(); return(','); }
+":"		    	{ count(); return(':'); }
+"="		    	{ count(); return('='); }
+"("		    	{ count(); return('('); }
+")"		    	{ count(); return(')'); }
 ("["|"<:")		{ count(); return('['); }
 ("]"|":>")		{ count(); return(']'); }
-"."			{ count(); return('.'); }
-"&"			{ count(); return('&'); }
-"!"			{ count(); return('!'); }
-"~"			{ count(); return('~'); }
-"-"			{ count(); return('-'); }
-"+"			{ count(); return('+'); }
-"*"			{ count(); return('*'); }
-"/"			{ count(); return('/'); }
-"%"			{ count(); return('%'); }
-"<"			{ count(); return('<'); }
-">"			{ count(); return('>'); }
-"^"			{ count(); return('^'); }
-"|"			{ count(); return('|'); }
-"?"			{ count(); return('?'); }
+"."		    	{ count(); return('.'); }
+"&"			    { count(); return('&'); }
+"!"	    		{ count(); return('!'); }
+"~"	    		{ count(); return('~'); }
+"-"	    		{ count(); return('-'); }
+"+"	    		{ count(); return('+'); }
+"*"	    		{ count(); return('*'); }
+"/"	    		{ count(); return('/'); }
+"%"	    		{ count(); return('%'); }
+"<"	    		{ count(); return('<'); }
+">"	    		{ count(); return('>'); }
+"^"	    		{ count(); return('^'); }
+"|"		    	{ count(); return('|'); }
+"?"		    	{ count(); return('?'); }
 
 [ \t\v\n\f]		{ count(); }
-.			{ /* Add code to complain about unmatched characters */ }
+.			    { yyerror("Unmatched characters"); return 0; }
 
 %%
 
