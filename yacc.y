@@ -26,14 +26,14 @@
 %%
 
 primary_expression
-	: IDENTIFIER {$$ = new Node("Identifier", $1)}
-	| CONSTANT {$$ = new Node("Constant", $1)}
-	| STRING_LITERAL {$$ = new Node("String literal", $1)}
-	| '(' expression ')' {$$ = new Node("Expression", $1)}
+	: IDENTIFIER {$$ = new Node("Identifier", $1);}
+	| CONSTANT {$$ = new Node("Constant", $1);}
+	| STRING_LITERAL {$$ = new Node("String literal", $1);}
+	| '(' expression ')' {$$ = new Node("Expression", $1);}
 	;
 
 postfix_expression
-	: primary_expression
+	: primary_expression {$$ = $1;}
 	| postfix_expression '[' expression ']'
 	| postfix_expression '(' ')'
 	| postfix_expression '(' argument_expression_list ')'
@@ -46,122 +46,122 @@ postfix_expression
 	;
 
 argument_expression_list
-	: assignment_expression
+	: assignment_expression {$$ = $1;}
 	| argument_expression_list ',' assignment_expression
 	;
 
 unary_expression
-	: postfix_expression
-	| INC_OP unary_expression
-	| DEC_OP unary_expression
-	| unary_operator cast_expression
-	| SIZEOF unary_expression
-	| SIZEOF '(' type_name ')'
+	: postfix_expression {$$ = $1;}
+	| INC_OP unary_expression {$$ = new Node("Increment", $1);}
+	| DEC_OP unary_expression {$$ = new Node("Decrement", $1);}
+	| unary_operator cast_expression {$$ = new Node("Unary operation", $1, $2);}
+	| SIZEOF unary_expression {$$ = new Node("Size of", $1);}
+	| SIZEOF '(' type_name ')' {$$ = new Node("Size of type", $1);}
 	;
 
 unary_operator
-	: '&'
-	| '*'
-	| '+'
-	| '-'
-	| '~'
-	| '!'
+	: '&' {$$ = $1;}
+	| '*' {$$ = $1;}
+	| '+' {$$ = $1;}
+	| '-' {$$ = $1;}
+	| '~' {$$ = $1;}
+	| '!' {$$ = $1;}
 	;
 
 cast_expression
 	: unary_expression {$$ = $1}
-	| '(' type_name ')' cast_expression {$$ = new Node("Cast", $1)}
+	| '(' type_name ')' cast_expression {$$ = new Node("Cast", $1);}
 	;
 
 multiplicative_expression
-	: cast_expression
-	| multiplicative_expression '*' cast_expression {$$ = new Node("Multiply", $1, $2)}
-	| multiplicative_expression '/' cast_expression {$$ = new Node("Divide", $1, $2)}
-	| multiplicative_expression '%' cast_expression {$$ = new Node("Modulo", $1, $2)}
+	: cast_expression {$$ = $1}
+	| multiplicative_expression '*' cast_expression {$$ = new Node("Multiply", $1, $2);}
+	| multiplicative_expression '/' cast_expression {$$ = new Node("Divide", $1, $2);}
+	| multiplicative_expression '%' cast_expression {$$ = new Node("Modulo", $1, $2);}
 	;
 
 additive_expression
-	: multiplicative_expression
-	| additive_expression '+' multiplicative_expression {$$ = new Node("Add", $1, $2)}
-	| additive_expression '-' multiplicative_expression {$$ = new Node("Sub", $1, $2}
+	: multiplicative_expression {$$ = $1;}
+	| additive_expression '+' multiplicative_expression {$$ = new Node("Add", $1, $2);}
+	| additive_expression '-' multiplicative_expression {$$ = new Node("Sub", $1, $2);}
 	;
 
 shift_expression
-	: additive_expression
-	| shift_expression LEFT_OP additive_expression {$$ = new Node("Left shift", $1, $2)}
-	| shift_expression RIGHT_OP additive_expression {$$ = new Node("Right shift", $1, $2)}
+	: additive_expression {$$ = $1;}
+	| shift_expression LEFT_OP additive_expression {$$ = new Node("Left shift", $1, $2);}
+	| shift_expression RIGHT_OP additive_expression {$$ = new Node("Right shift", $1, $2);}
 	;
 
 relational_expression
-	: shift_expression
-	| relational_expression '<' shift_expression {$$ = new Node("Less", $1, $2)}
-	| relational_expression '>' shift_expression {$$ = new Node("More", $1, $2)}
-	| relational_expression LE_OP shift_expression 
-	| relational_expression GE_OP shift_expression
+	: shift_expression {$$ = $1;}
+	| relational_expression '<' shift_expression {$$ = new Node("Less", $1, $2);}
+	| relational_expression '>' shift_expression {$$ = new Node("More", $1, $2);}
+	| relational_expression LE_OP shift_expression  {$$ = new Node("Less or equal", $1, $2);}
+	| relational_expression GE_OP shift_expression {$$ = new Node("More or equal", $1, $2);}
 	;
 
 equality_expression
-	: relational_expression
-	| equality_expression EQ_OP relational_expression
-	| equality_expression NE_OP relational_expression
+	: relational_expression {$$ = $1;}
+	| equality_expression EQ_OP relational_expression {$$ = new Node("Equals", $1, $2;}
+	| equality_expression NE_OP relational_expression {$$ = new Node("Not equals", $1, $2;}
 	;
 
 and_expression
-	: equality_expression
-	| and_expression '&' equality_expression
+	: equality_expression {$$ = $1;}
+	| and_expression '&' equality_expression {$$ = new Node("And", $1, $2);}
 	;
 
 exclusive_or_expression
-	: and_expression
-	| exclusive_or_expression '^' and_expression
+	: and_expression {$$ = $1;}
+	| exclusive_or_expression '^' and_expression {$$ = new Node("Exclusive or", $1,$2);}
 	;
 
 inclusive_or_expression
-	: exclusive_or_expression
-	| inclusive_or_expression '|' exclusive_or_expression
+	: exclusive_or_expression {$$ = $1;}
+	| inclusive_or_expression '|' exclusive_or_expression 
 	;
 
 logical_and_expression
-	: inclusive_or_expression
+	: inclusive_or_expression {$$ = $1;}
 	| logical_and_expression AND_OP inclusive_or_expression
 	;
 
 logical_or_expression
-	: logical_and_expression
+	: logical_and_expression {$$ = $1;}
 	| logical_or_expression OR_OP logical_and_expression
 	;
 
 conditional_expression
-	: logical_or_expression
+	: logical_or_expression {$$ = $1;}
 	| logical_or_expression '?' expression ':' conditional_expression
 	;
 
 assignment_expression
-	: conditional_expression
-	| unary_expression assignment_operator assignment_expression
+	: conditional_expression {$$ = $1;}
+	| unary_expression assignment_operator assignment_expression {$$ = new Node("Assignment", $1, $2, $3);}
 	;
 
 assignment_operator
-	: '='
-	| MUL_ASSIGN
-	| DIV_ASSIGN
-	| MOD_ASSIGN
-	| ADD_ASSIGN
-	| SUB_ASSIGN
-	| LEFT_ASSIGN
-	| RIGHT_ASSIGN
-	| AND_ASSIGN
-	| XOR_ASSIGN
-	| OR_ASSIGN
+	: '=' {$$ = $1;}
+	| MUL_ASSIGN {$$ = $1;}
+	| DIV_ASSIGN {$$ = $1;}
+	| MOD_ASSIGN {$$ = $1;}
+	| ADD_ASSIGN {$$ = $1;} 
+	| SUB_ASSIGN {$$ = $1;}
+	| LEFT_ASSIGN {$$ = $1;}
+	| RIGHT_ASSIGN {$$ = $1;}
+	| AND_ASSIGN {$$ = $1;}
+	| XOR_ASSIGN {$$ = $1;}
+	| OR_ASSIGN {$$ = $1;}
 	;
 
 expression
-	: assignment_expression
+	: assignment_expression {$$ = $1;}
 	| expression ',' assignment_expression
 	;
 
 constant_expression
-	: conditional_expression
+	: conditional_expression {$$ = $1;}
 	;
 
 declaration
@@ -191,40 +191,40 @@ init_declarator
 	;
 
 storage_class_specifier
-	: TYPEDEF
-	| EXTERN
-	| STATIC
-	| AUTO
-	| REGISTER
+	: TYPEDEF {$$ = $1;}
+	| EXTERN {$$ = $1;}
+	| STATIC {$$ = $1;}
+	| AUTO {$$ = $1;}
+	| REGISTER {$$ = $1;}
 	;
 
 type_specifier
-	: VOID
-	| CHAR
-	| SHORT
-	| INT
-	| LONG
-	| FLOAT
-	| DOUBLE
-	| SIGNED
-	| UNSIGNED
-	| BOOL
-	| COMPLEX
-	| IMAGINARY
-	| struct_or_union_specifier
-	| enum_specifier
-	| TYPE_NAME
+	: VOID {$$ = $1;}
+	| CHAR {$$ = $1;}
+	| SHORT {$$ = $1;}
+	| INT {$$ = $1;}
+	| LONG {$$ = $1;}
+	| FLOAT {$$ = $1;}
+	| DOUBLE {$$ = $1;}
+	| SIGNED {$$ = $1;}
+	| UNSIGNED {$$ = $1;}
+	| BOOL {$$ = $1;}
+	| COMPLEX {$$ = $1;}
+	| IMAGINARY {$$ = $1;}
+	| struct_or_union_specifier {$$ = $1;}
+	| enum_specifier {$$ = $1;}
+	| TYPE_NAME {$$ = $1;}
 	;
 
 struct_or_union_specifier
-	: struct_or_union IDENTIFIER '{' struct_declaration_list '}'
-	| struct_or_union '{' struct_declaration_list '}'
-	| struct_or_union IDENTIFIER
+	: struct_or_union IDENTIFIER '{' struct_declaration_list '}'  
+	| struct_or_union '{' struct_declaration_list '}' 
+	| struct_or_union IDENTIFIER 
 	;
 
 struct_or_union
-	: STRUCT
-	| UNION
+	: STRUCT {$$ = $1;}
+	| UNION {$$ = $1;}
 	;
 
 struct_declaration_list
