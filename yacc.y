@@ -298,7 +298,7 @@ declarator
 
 direct_declarator
 	: IDENTIFIER {$$ = $1;}
-	| '(' declarator ')' {$$ = $1;}
+	| '(' declarator ')' {$$ = new Node("Direct declarator", $2;}
 	| direct_declarator '[' type_qualifier_list assignment_expression ']' {$$ = new Node("Direct declarator", $1, $3, $4);}
 	| direct_declarator '[' type_qualifier_list ']' {$$ = new Node("Direct declarator", $1, $3);}
 	| direct_declarator '[' assignment_expression ']' {$$ = new Node("Direct declarator", $1, $3);}
@@ -313,32 +313,32 @@ direct_declarator
 	;
 
 pointer
-	: '*' {$$ = $1;}
+	: '*' {$$ = new Node("Pointer", $1);}
 	| '*' type_qualifier_list{$$ = new Node("Pointer", $1, $2);}
 	| '*' pointer {$$ = new Node("Pointer", $1, $2);}
 	| '*' type_qualifier_list pointer{$$ = new Node("Pointer", $1, $2, $3);}
 	;
 
 type_qualifier_list
-	: type_qualifier {$$ = $1;}
+	: type_qualifier {$$ = new Node("Type qualifier list", $1);}
 	| type_qualifier_list type_qualifier {$$ = new Node("Type qualifier list", $1, $2);}
 	;
 
 
 parameter_type_list
-	: parameter_list {$$ = $1;}
+	: parameter_list {$$ = new Node("Parameter type list", $1);}
 	| parameter_list ',' ELLIPSIS {$$ = new Node("Parameter type list", $1, $3);}
 	;
 
 parameter_list
-	: parameter_declaration {$$ = $1;}
+	: parameter_declaration {$$ = new Node("Parameter list", $1);}
 	| parameter_list ',' parameter_declaration {$$ = new Node("Parameter list", $1, $3);}
 	;
 
 parameter_declaration
 	: declaration_specifiers declarator {$$ = new Node("Parameter declaration", $1, $2);}
 	| declaration_specifiers abstract_declarator {$$ = new Node("Parameter declaration", $1, $2);}
-	| declaration_specifiers {$$ = $1;}
+	| declaration_specifiers {$$ = new Node("Parameter declaration", $1);}
 	;
 
 identifier_list
@@ -347,18 +347,18 @@ identifier_list
 	;
 
 type_name
-	: specifier_qualifier_list {$$ = $1;}
+	: specifier_qualifier_list {$$ = new Node("Type name", $1);}
 	| specifier_qualifier_list abstract_declarator {$$ = new Node("Type name", $1, $2);}
 	;
 
 abstract_declarator
-	: pointer {$$ = $1;}
-	| direct_abstract_declarator {$$ = $1;}
+	: pointer {$$ = new Node("Abstract declarator", $1);}
+	| direct_abstract_declarator {$$ = new Node("Abstract declarator", $1);}
 	| pointer direct_abstract_declarator {$$ = new Node("Abstract declarator", $1, $2);}
 	;
 
 direct_abstract_declarator
-	: '(' abstract_declarator ')' {$$ = $2;}
+	: '(' abstract_declarator ')' {$$ = new Node("Abstract declarator"), $2;}
 	| '[' ']' {$$ = new Node("Empty square brackets");}
 	| '[' assignment_expression ']' {$$ = new Node("Square brackets with AE");}
 	| direct_abstract_declarator '[' ']' {$$ = new Node("Empty square DAD");}
@@ -372,24 +372,24 @@ direct_abstract_declarator
 	;
 
 initializer
-	: assignment_expression {$$ = $1;}
+	: assignment_expression {$$ = new Node("Initializer", $1);}
 	| '{' initializer_list '}' {$$ = new Node("Initializer", $2);}
 	| '{' initializer_list ',' '}' {$$ = new Node("Initializer", $2);}
 	;
 
 initializer_list
-	: initializer {$$ = $1;}
+	: initializer {$$ = new Node("Initializer list", $1);}
 	| designation initializer {$$ = new Node("Initializer list", $1, $2);}
 	| initializer_list ',' initializer {$$ = new Node("Initializer list", $1, $3);}
 	| initializer_list ',' designation initializer {$$ = new Node("Initializer list", $1, $3, $4);}
 	;
 
 designation
-	: designator_list '=' {$$ = $1;}
+	: designator_list '=' {$$ = new Node("Designator", $1, $2);}
 	;
 
 designator_list
-	: designator {$$ = $1;}
+	: designator {$$ = new Node("Designator list", $1);}
 	| designator_list designator {$$ = new Node("Designator list", $1, $2);}
 	;
 
@@ -399,12 +399,12 @@ designator
 	;
 
 statement
-	: labeled_statement {$$ = $1;}
-	| compound_statement {$$ = $1;}
-	| expression_statement {$$ = $1;}
-	| selection_statement {$$ = $1;}
-	| iteration_statement {$$ = $1;}
-	| jump_statement {$$ = $1;}
+	: labeled_statement {$$ = new Node("Labeled statement", $1);}
+	| compound_statement {$$ = new Node("Compound statement", $1);}
+	| expression_statement {$$ = new Node("Expression statement", $1);}
+	| selection_statement {$$ = new Node("Selection statement", $1);}
+	| iteration_statement {$$ = new Node("Iteration statement", $1);}
+	| jump_statement {$$ = new Node("Jump statement", $1);}
 	;
 
 labeled_statement
@@ -415,22 +415,22 @@ labeled_statement
 
 compound_statement
 	: '{' '}' {$$ = new Node("Empty Declaration", $1, $2);}
-	| '{' block_item_list '}' {$$ = $1;}
+	| '{' block_item_list '}' {$$ = new Node("Block item list", $2);}
 	;
 
 block_item_list
-	: block_item {$$ = $1;}
+	: block_item {$$ = new Node("Block item", $1);}
 	| block_item_list block_item {$$ = new Node("Block item list", $1, $2);}
 	;
 
 block_item
-	: declaration {$$ = $1;}
-	| statement {$$ = $1;}
+	: declaration {$$ = new Node("Declaration", $1);}
+	| statement {$$ = new Node("Statement", $1);}
 	;
 
 expression_statement
-	: ';'
-	| expression ';' {$$ = $1;}
+	: ';' {$$ = new Node("Semicolon");}
+	| expression ';' {$$ = new Node("Expression", $1);}
 	;
 
 selection_statement
@@ -457,13 +457,13 @@ jump_statement
 	;
 
 translation_unit
-	: external_declaration {$$ = $1; root = $$;}
+	: external_declaration {$$ = new Node("External declaration", $1); root = $$;}
  	| translation_unit external_declaration {$$ = new Node("Translation unit", $1, $2); root = $$;}
 	;
 
 external_declaration
-	: function_definition {$$ = $1;}
-	| declaration {$$ = $1;}
+	: function_definition {$$ = new Node("Function definition", $1);}
+	| declaration {$$ = new Node("Declaration", $1);}
 	;
 
 function_definition
@@ -472,7 +472,7 @@ function_definition
 	;
 
 declaration_list
-	: declaration {$$ = $1;}
+	: declaration {$$ = new Node("Declaration", $1);}
 	| declaration_list declaration {$$ = new Node("Declaration list", $1, $2);}
 	;
 
