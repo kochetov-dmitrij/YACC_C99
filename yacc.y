@@ -296,26 +296,26 @@ declarator
 
 
 direct_declarator
-	: IDENTIFIER
-	| '(' declarator ')'
-	| direct_declarator '[' type_qualifier_list assignment_expression ']'
-	| direct_declarator '[' type_qualifier_list ']'
-	| direct_declarator '[' assignment_expression ']'
-	| direct_declarator '[' STATIC type_qualifier_list assignment_expression ']'
-	| direct_declarator '[' type_qualifier_list STATIC assignment_expression ']'
-	| direct_declarator '[' type_qualifier_list '*' ']'
-	| direct_declarator '[' '*' ']'
-	| direct_declarator '[' ']'
-	| direct_declarator '(' parameter_type_list ')'
-	| direct_declarator '(' identifier_list ')'
-	| direct_declarator '(' ')'
+	: IDENTIFIER {$$ = $1}
+	| '(' declarator ')' {$$ = $1}
+	| direct_declarator '[' type_qualifier_list assignment_expression ']' {$$ = new Node("Direct declarator", $1, $3, $4);}
+	| direct_declarator '[' type_qualifier_list ']' {$$ = new Node("Direct declarator", $1, $3);}
+	| direct_declarator '[' assignment_expression ']' {$$ = new Node("Direct declarator", $1, $3);}
+	| direct_declarator '[' STATIC type_qualifier_list assignment_expression ']' {$$ = new Node("Direct declarator", $1, $3, $4, $5);}
+	| direct_declarator '[' type_qualifier_list STATIC assignment_expression ']' {$$ = new Node("Direct declarator", $1, $3, $4, $5);}
+	| direct_declarator '[' type_qualifier_list '*' ']' {$$ = new Node("Direct declarator", $1, $3);}
+	| direct_declarator '[' '*' ']' {$$ = new Node("Direct declarator", $1);}
+	| direct_declarator '[' ']' {$$ = new Node("Direct declarator", $1);}
+	| direct_declarator '(' parameter_type_list ')' {$$ = new Node("Direct declarator", $1, $3);}
+	| direct_declarator '(' identifier_list ')' {$$ = new Node("Direct declarator", $1, $3);}
+	| direct_declarator '(' ')' {$$ = new Node("Direct declarator", $1);}
 	;
 
 pointer
-	: '*'
-	| '*' type_qualifier_list
-	| '*' pointer
-	| '*' type_qualifier_list pointer
+	: '*' {$$ = $1}
+	| '*' type_qualifier_list{$$ = new Node("Pointer", $1, $2;}
+	| '*' pointer {$$ = new Node("Pointer", $1, $2;}
+	| '*' type_qualifier_list pointer{$$ = new Node("Pointer", $1, $2, $3;}
 	;
 
 type_qualifier_list
@@ -467,7 +467,7 @@ external_declaration
 
 function_definition
 	: declaration_specifiers declarator declaration_list compound_statement {$$ = new Node("Function definition", $1, $2, $3, $4);}
-	| declaration_specifiers declarator compound_statement {$$ = new Node("Declaration list", $1, $2, $3);}
+	| declaration_specifiers declarator compound_statement {$$ = new Node("Function definition", $1, $2, $3);}
 	;
 
 declaration_list
