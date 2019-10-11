@@ -12,6 +12,7 @@ extern "C" FILE *yyin;
 
 #define YYSTYPE Node*
 
+Node *root;
 void yyerror(char const *s);
 %}
 
@@ -486,13 +487,43 @@ void yyerror(char const *s)
 	printf("\n%*s\n%*s\n", column, "^", column, s);
 }
 
+void printTree(const std::string &prefix, const Node *node, bool is_last) {
+        if (node != nullptr) {
+
+                std::cout << prefix;
+                std::cout << (is_last ? "└──" : "├──");
+                std::cout << node->name << std::endl;
+
+                if (node->left != nullptr) {
+                        printTree(prefix + (is_last ? "    " : "│   "), node->left, !node->right);
+                }
+                if (node->right != nullptr) {
+                        printTree(prefix + (is_last ? "    " : "│   "), node->right, !node->third);
+                }
+                if (node->third != nullptr) {
+                        printTree(prefix + (is_last ? "    " : "│   "), node->third, !node->fourth);
+                }
+                if (node->fourth != nullptr) {
+                        printTree(prefix + "    ", node->fourth, true);
+                }
+        }
+}
+
+void printTree(const Node* node)
+{
+	std::cout << "\n\n===== Tree =====\n\n";
+    	printTree("", node, true);
+}
+
 int main(int argc, char* argv[])
 {
-    if (argc != 2) {
-    	std::cout << "Expected 1 argument: Pass filename as an argument" << std::endl;
-    	return 1;
-    }
-    yyin = fopen(argv[1],"r");
-    yyparse();
-    return 0;
+	if (argc != 2) {
+		std::cout << "Expected 1 argument: Pass filename as an argument" << std::endl;
+		return 1;
+	}
+	yyin = fopen(argv[1], "r");
+	yyparse();
+	if (root != nullptr) printTree(root);
+
+	return 0;
 }
