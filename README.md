@@ -1,13 +1,15 @@
 # YACC_C99
 
-Process the yacc grammar file
-- `yacc -d yacc.y -o yacc.tab.c`
+CMake does the following:
 
-Process the lex specification file:
-- `lex lex.l`
-
-Compile and link the two C language source files:
-- `gcc yacc.tab.c lex.yy.c -o parser`
-
-Run the program
-- `./parser`
+> Process the yacc grammar file:\
+> `yacc.y` -> (bison) -> `yacc.c`, `yacc.h`
+>
+> Process the lex specification file:\
+> `lex.l` -> (flex) -> `lex.c`
+>
+> Compile and link the two C language source files:\
+> `yacc.c`, `lex.c`  -> `parser`
+>
+> Run the program\
+> `./parser`
