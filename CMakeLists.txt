@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.8)
 project(YACC_C99)
 include_directories(.)
 
@@ -16,9 +17,7 @@ MACRO(YACC_FILE _filename)
     GET_FILENAME_COMPONENT(_basename ${_filename} NAME_WE)
     ADD_CUSTOM_COMMAND(
             OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_basename}.cpp ${CMAKE_CURRENT_BINARY_DIR}/${_basename}.h
-            COMMAND ${YACC_EXE} -d --output=${_basename}.cpp ${CMAKE_CURRENT_SOURCE_DIR}/${_filename}
-            DEPENDS ${_filename}
-    )
+            COMMAND ${YACC_EXE} -d --output=${_basename}.cpp ${CMAKE_CURRENT_SOURCE_DIR}/${_filename})
 ENDMACRO(YACC_FILE)
 
 # reuseable cmake macro for lex
@@ -26,8 +25,7 @@ MACRO(LEX_FILE _filename)
     GET_FILENAME_COMPONENT(_basename ${_filename} NAME_WE)
     ADD_CUSTOM_COMMAND(
             OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_basename}.c
-            COMMAND ${LEX_EXE} -o${_basename}.cpp ${CMAKE_CURRENT_SOURCE_DIR}/${_filename}
-            DEPENDS ${_filename})
+            COMMAND ${LEX_EXE} -o${_basename}.cpp ${CMAKE_CURRENT_SOURCE_DIR}/${_filename})
 ENDMACRO(LEX_FILE)
 
 YACC_FILE(yacc.y)

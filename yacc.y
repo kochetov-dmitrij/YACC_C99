@@ -7,6 +7,8 @@
 #include "node.h"
 
 #define YYSTYPE Node*
+
+void yyerror(char const *s);
 %}
 
 %token IDENTIFIER CONSTANT STRING_LITERAL SIZEOF
@@ -103,8 +105,8 @@ relational_expression
 
 equality_expression
 	: relational_expression {$$ = $1;}
-	| equality_expression EQ_OP relational_expression {$$ = new Node("Equals", $1, $2;}
-	| equality_expression NE_OP relational_expression {$$ = new Node("Not equals", $1, $2;}
+	| equality_expression EQ_OP relational_expression {$$ = new Node("Equals", $1, $2);}
+	| equality_expression NE_OP relational_expression {$$ = new Node("Not equals", $1, $2);}
 	;
 
 and_expression

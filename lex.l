@@ -11,6 +11,8 @@ IS                      ((u|U)|(u|U)?(l|L|ll|LL)|(l|L|ll|LL)(u|U))
 #include "yacc.h"
 
 void count(void);
+int check_type(void);
+void comment(void);
 %}
 
 %%
