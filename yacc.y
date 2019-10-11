@@ -488,14 +488,11 @@ void yyerror(char const *s)
 
 int main(int argc, char* argv[])
 {
-    std::cout << argv[1] << std::endl;
-    if (argc > 1) {
-        FILE *fl;
-        fl = fopen(argv[1],"r");
-        yyin = fl;
+    if (argc != 2) {
+    	std::cout << "Expected 1 argument: Pass filename as an argument" << std::endl;
+    	return 1;
     }
-
+    yyin = fopen(argv[1],"r");
     yyparse();
-
     return 0;
 }

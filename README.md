@@ -1,6 +1,6 @@
 # YACC_C99
 
-CMake does the following:
+run.sh does the following:
 
 > Process the yacc grammar file:\
 > `yacc.y` -> (bison) -> `yacc.c`, `yacc.h`
@@ -12,4 +12,4 @@ CMake does the following:
 > `yacc.c`, `lex.c`  -> `parser`
 >
 > Run the program\
-> `./parser`
+> `./parser input.txt`
