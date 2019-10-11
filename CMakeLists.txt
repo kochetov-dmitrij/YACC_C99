@@ -16,7 +16,7 @@ endif (YACC_EXE STREQUAL "YACC_EXE-NOTFOUND")
 MACRO(YACC_FILE _filename)
     GET_FILENAME_COMPONENT(_basename ${_filename} NAME_WE)
     ADD_CUSTOM_COMMAND(
-            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_basename}.cpp ${CMAKE_CURRENT_BINARY_DIR}/${_basename}.h
+            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_basename}.cpp ${CMAKE_CURRENT_BINARY_DIR}/${_basename}.hpp
             COMMAND ${YACC_EXE} -d --output=${_basename}.cpp ${CMAKE_CURRENT_SOURCE_DIR}/${_filename})
 ENDMACRO(YACC_FILE)
 
@@ -24,7 +24,7 @@ ENDMACRO(YACC_FILE)
 MACRO(LEX_FILE _filename)
     GET_FILENAME_COMPONENT(_basename ${_filename} NAME_WE)
     ADD_CUSTOM_COMMAND(
-            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_basename}.c
+            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_basename}.cpp
             COMMAND ${LEX_EXE} -o${_basename}.cpp ${CMAKE_CURRENT_SOURCE_DIR}/${_filename})
 ENDMACRO(LEX_FILE)
 

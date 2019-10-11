@@ -8,11 +8,11 @@ IS                      ((u|U)|(u|U)?(l|L|ll|LL)|(l|L|ll|LL)(u|U))
 
 %{
 #include <stdio.h>
-#include "yacc.h"
+#include "yacc.hpp"
 
 void count(void);
-int check_type(void);
 void comment(void);
+extern void yyerror(const char *);
 %}
 
 %%
@@ -58,7 +58,7 @@ void comment(void);
 "volatile"		{ count(); return(VOLATILE); }
 "while"			{ count(); return(WHILE); }
 
-{L}({L}|{D})*		{ count(); return(check_type()); }
+{L}({L}|{D})*		{ count(); return(IDENTIFIER); }
 
 0[xX]{H}+{IS}?		{ count(); return(CONSTANT); }
 0[0-7]*{IS}?		{ count(); return(CONSTANT); }
@@ -137,13 +137,13 @@ void comment(void)
 {
 	char c, prev = 0;
   
-	while ((c = input()) != 0)      /* (EOF maps to 0) */
+	while ((c = yyinput()) != 0)      /* (EOF maps to 0) */
 	{
 		if (c == '/' && prev == '*')
 			return;
 		prev = c;
 	}
-	error("unterminated comment");
+	yyerror("Unterminated comment");
 }
 
 
@@ -160,25 +160,5 @@ void count(void)
 			column += 8 - (column % 8);
 		else
 			column++;
-
 	ECHO;
-}
-
-
-int check_type(void)
-{
-/*
-* pseudo code --- this is what it should check
-*
-*	if (yytext == type_name)
-*		return TYPE_NAME;
-*
-*	return IDENTIFIER;
-*/
-
-/*
-*	it actually will only return IDENTIFIER
-*/
-
-	return IDENTIFIER;
 }

@@ -3,11 +3,10 @@
 #include <iostream>
 #include <string>
 #include "string.h"
-
 #include "node.h"
-
 #define YYSTYPE Node*
 
+int yylex();
 void yyerror(char const *s);
 %}
 
@@ -473,13 +472,27 @@ declaration_list
 
 
 %%
-#include <stdio.h>
-
-extern char yytext[];
+extern *char yytext;
 extern int column;
 
 void yyerror(char const *s)
 {
 	fflush(stdout);
 	printf("\n%*s\n%*s\n", column, "^", column, s);
+}
+
+int main(int argc ,char *argv[]){
+        FILE *f = fopen(argv[1], "r");
+        fseek(f, 0, SEEK_END);
+        long fsize = ftell(f);
+        fseek(f, 0, SEEK_SET);
+
+        yytext = (char *)malloc(fsize + 1);
+        fread(yytext, fsize, 1, f);
+        fclose(f);
+        yytext[fsize] = 0;
+
+	yyparse();
+	fclose(yyin);
+	return 0;
 }
