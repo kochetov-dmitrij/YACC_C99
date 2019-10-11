@@ -32,34 +32,34 @@ primary_expression
 	: IDENTIFIER {$$ = new Node("Identifier", $1);}
 	| CONSTANT {$$ = new Node("Constant", $1);}
 	| STRING_LITERAL {$$ = new Node("String literal", $1);}
-	| '(' expression ')' {$$ = new Node("Expression", $1);}
+	| '(' expression ')' {$$ = new Node("Expression", $2);}
 	;
 
 postfix_expression
 	: primary_expression {$$ = $1;}
-	| postfix_expression '[' expression ']'
-	| postfix_expression '(' ')'
-	| postfix_expression '(' argument_expression_list ')'
-	| postfix_expression '.' IDENTIFIER
-	| postfix_expression PTR_OP IDENTIFIER
-	| postfix_expression INC_OP
-	| postfix_expression DEC_OP
-	| '(' type_name ')' '{' initializer_list '}'
-	| '(' type_name ')' '{' initializer_list ',' '}'
+	| postfix_expression '[' expression ']' {$$ = new Node("Postfix expression", $1, $3);}
+	| postfix_expression '(' ')' {$$ = new Node("Postfix expression", $1);}
+	| postfix_expression '(' argument_expression_list ')' {$$ = new Node("Postfix expression", $1, $3);}
+	| postfix_expression '.' IDENTIFIER {$$ = new Node("Postfix expression", $1, $3);}
+	| postfix_expression PTR_OP IDENTIFIER {$$ = new Node("Postfix expression pointer", $1, $3);}
+	| postfix_expression INC_OP {$$ = new Node("Postfix expression incremented", $1);}
+	| postfix_expression DEC_OP {$$ = new Node("Postfix expression decremented", $1);}
+	| '(' type_name ')' '{' initializer_list '}' {$$ = new Node("Postfix expression", $2, $5);}
+	| '(' type_name ')' '{' initializer_list ',' '}' {$$ = new Node("Postfix expression", $2, $5);}
 	;
 
 argument_expression_list
 	: assignment_expression {$$ = $1;}
-	| argument_expression_list ',' assignment_expression
+	| argument_expression_list ',' assignment_expression {$$ = new Node("Argument expression list", $1, $3);}
 	;
 
 unary_expression
 	: postfix_expression {$$ = $1;}
-	| INC_OP unary_expression {$$ = new Node("Increment", $1);}
-	| DEC_OP unary_expression {$$ = new Node("Decrement", $1);}
+	| INC_OP unary_expression {$$ = new Node("Increment", $2);}
+	| DEC_OP unary_expression {$$ = new Node("Decrement", $2);}
 	| unary_operator cast_expression {$$ = new Node("Unary operation", $1, $2);}
-	| SIZEOF unary_expression {$$ = new Node("Size of", $1);}
-	| SIZEOF '(' type_name ')' {$$ = new Node("Size of type", $1);}
+	| SIZEOF unary_expression {$$ = new Node("Size of", $2);}
+	| SIZEOF '(' type_name ')' {$$ = new Node("Size of type", $3);}
 	;
 
 unary_operator
@@ -78,35 +78,35 @@ cast_expression
 
 multiplicative_expression
 	: cast_expression {$$ = $1}
-	| multiplicative_expression '*' cast_expression {$$ = new Node("Multiply", $1, $2);}
-	| multiplicative_expression '/' cast_expression {$$ = new Node("Divide", $1, $2);}
-	| multiplicative_expression '%' cast_expression {$$ = new Node("Modulo", $1, $2);}
+	| multiplicative_expression '*' cast_expression {$$ = new Node("Multiply", $1, $3);}
+	| multiplicative_expression '/' cast_expression {$$ = new Node("Divide", $1, $3);}
+	| multiplicative_expression '%' cast_expression {$$ = new Node("Modulo", $1, $3);}
 	;
 
 additive_expression
 	: multiplicative_expression {$$ = $1;}
-	| additive_expression '+' multiplicative_expression {$$ = new Node("Add", $1, $2);}
-	| additive_expression '-' multiplicative_expression {$$ = new Node("Sub", $1, $2);}
+	| additive_expression '+' multiplicative_expression {$$ = new Node("Add", $1, $3);}
+	| additive_expression '-' multiplicative_expression {$$ = new Node("Sub", $1, $3);}
 	;
 
 shift_expression
 	: additive_expression {$$ = $1;}
-	| shift_expression LEFT_OP additive_expression {$$ = new Node("Left shift", $1, $2);}
-	| shift_expression RIGHT_OP additive_expression {$$ = new Node("Right shift", $1, $2);}
+	| shift_expression LEFT_OP additive_expression {$$ = new Node("Left shift", $1, $3);}
+	| shift_expression RIGHT_OP additive_expression {$$ = new Node("Right shift", $1, $3);}
 	;
 
 relational_expression
 	: shift_expression {$$ = $1;}
-	| relational_expression '<' shift_expression {$$ = new Node("Less", $1, $2);}
-	| relational_expression '>' shift_expression {$$ = new Node("More", $1, $2);}
-	| relational_expression LE_OP shift_expression  {$$ = new Node("Less or equal", $1, $2);}
-	| relational_expression GE_OP shift_expression {$$ = new Node("More or equal", $1, $2);}
+	| relational_expression '<' shift_expression {$$ = new Node("Less", $1, $3);}
+	| relational_expression '>' shift_expression {$$ = new Node("More", $1, $3);}
+	| relational_expression LE_OP shift_expression  {$$ = new Node("Less or equal", $1, $3);}
+	| relational_expression GE_OP shift_expression {$$ = new Node("More or equal", $1, $3);}
 	;
 
 equality_expression
 	: relational_expression {$$ = $1;}
-	| equality_expression EQ_OP relational_expression {$$ = new Node("Equals", $1, $2);}
-	| equality_expression NE_OP relational_expression {$$ = new Node("Not equals", $1, $2);}
+	| equality_expression EQ_OP relational_expression {$$ = new Node("Equals", $1, $3);}
+	| equality_expression NE_OP relational_expression {$$ = new Node("Not equals", $1, $3);}
 	;
 
 and_expression
@@ -116,27 +116,27 @@ and_expression
 
 exclusive_or_expression
 	: and_expression {$$ = $1;}
-	| exclusive_or_expression '^' and_expression {$$ = new Node("Exclusive or", $1,$2);}
+	| exclusive_or_expression '^' and_expression {$$ = new Node("Exclusive or", $1, $3);}
 	;
 
 inclusive_or_expression
 	: exclusive_or_expression {$$ = $1;}
-	| inclusive_or_expression '|' exclusive_or_expression 
+	| inclusive_or_expression '|' exclusive_or_expression {$$ = new Node("Inclusive or", $1, $3);}
 	;
 
 logical_and_expression
 	: inclusive_or_expression {$$ = $1;}
-	| logical_and_expression AND_OP inclusive_or_expression
+	| logical_and_expression AND_OP inclusive_or_expression {$$ = new Node("Logical and", $1, $3);}
 	;
 
 logical_or_expression
 	: logical_and_expression {$$ = $1;}
-	| logical_or_expression OR_OP logical_and_expression
+	| logical_or_expression OR_OP logical_and_expression {$$ = new Node("Logical or", $1, $3);}
 	;
 
 conditional_expression
 	: logical_or_expression {$$ = $1;}
-	| logical_or_expression '?' expression ':' conditional_expression
+	| logical_or_expression '?' expression ':' conditional_expression {$$ = new Node("Ternary condition", $1, $3, $5);}
 	;
 
 assignment_expression
@@ -160,7 +160,7 @@ assignment_operator
 
 expression
 	: assignment_expression {$$ = $1;}
-	| expression ',' assignment_expression
+	| expression ',' assignment_expression {$$ = new Node("Expression", $1, $3);}
 	;
 
 constant_expression
@@ -168,29 +168,29 @@ constant_expression
 	;
 
 declaration
-	: declaration_specifiers ';'
-	| declaration_specifiers init_declarator_list ';'
+	: declaration_specifiers ';' {$$ = $1}
+	| declaration_specifiers init_declarator_list ';' {$$ = new Node("Declaration", $1, $2);}
 	;
 
 declaration_specifiers
-	: storage_class_specifier
-	| storage_class_specifier declaration_specifiers
-	| type_specifier
-	| type_specifier declaration_specifiers
-	| type_qualifier
-	| type_qualifier declaration_specifiers
-	| function_specifier
-	| function_specifier declaration_specifiers
+	: storage_class_specifier {$$ = $1;}
+	| storage_class_specifier declaration_specifiers {$$ = new Node("Declaration specifiers", $1, $2);}
+	| type_specifier {$$ = $1;}
+	| type_specifier declaration_specifiers {$$ = new Node("Declaration specifiers", $1, $2);}
+	| type_qualifier {$$ = $1;}
+	| type_qualifier declaration_specifiers {$$ = new Node("Declaration specifiers", $1, $2);}
+	| function_specifier {$$ = $1;}
+	| function_specifier declaration_specifiers {$$ = new Node("Declaration specifiers", $1, $2);}
 	;
 
 init_declarator_list
-	: init_declarator
-	| init_declarator_list ',' init_declarator
+	: init_declarator {$$ = $1;}
+	| init_declarator_list ',' init_declarator {$$ = new Node("Init declarator list", $1, $3);}
 	;
 
 init_declarator
-	: declarator
-	| declarator '=' initializer
+	: declarator {$$ = $1;}
+	| declarator '=' initializer {$$ = new Node("Init declarator", $1, $3);}
 	;
 
 storage_class_specifier
@@ -220,9 +220,9 @@ type_specifier
 	;
 
 struct_or_union_specifier
-	: struct_or_union IDENTIFIER '{' struct_declaration_list '}'  
-	| struct_or_union '{' struct_declaration_list '}' 
-	| struct_or_union IDENTIFIER 
+	: struct_or_union IDENTIFIER '{' struct_declaration_list '}' {$$ = new Node("Struct or union specifier", $1, $2, $4);}
+	| struct_or_union '{' struct_declaration_list '}'  {$$ = new Node("Struct or union specifier", $1, $3);}
+	| struct_or_union IDENTIFIER {$$ = new Node("Struct or union specifier", $1, $2);}
 	;
 
 struct_or_union
@@ -231,63 +231,63 @@ struct_or_union
 	;
 
 struct_declaration_list
-	: struct_declaration
-	| struct_declaration_list struct_declaration
+	: struct_declaration {$$ = $1;}
+	| struct_declaration_list struct_declaration {$$ = new Node("Struct declaration list", $1, $2);}
 	;
 
 struct_declaration
-	: specifier_qualifier_list struct_declarator_list ';'
+	: specifier_qualifier_list struct_declarator_list ';' {$$ = new Node("Struct declarator", $1, $2);}
 	;
 
 specifier_qualifier_list
-	: type_specifier specifier_qualifier_list
-	| type_specifier
-	| type_qualifier specifier_qualifier_list
-	| type_qualifier
+	: type_specifier specifier_qualifier_list {$$ = new Node("Specifier qualifier list", $1, $2);}
+	| type_specifier {$$ = $1;}
+	| type_qualifier specifier_qualifier_list {$$ = new Node("Specifier qualifier list", $1, $2);}
+	| type_qualifier {$$ = $1;}
 	;
 
 struct_declarator_list
-	: struct_declarator
-	| struct_declarator_list ',' struct_declarator
+	: struct_declarator {$$ = $1;}
+	| struct_declarator_list ',' struct_declarator {$$ = new Node("Struct declarator list", $1, $3);}
 	;
 
 struct_declarator
-	: declarator
-	| ':' constant_expression
-	| declarator ':' constant_expression
+	: declarator {$$ = $1;}
+	| ':' constant_expression {$$ = new Node("Struct declarator", $2);}
+	| declarator ':' constant_expression {$$ = new Node("Struct declarator", $1, $3);}
 	;
 
 enum_specifier
-	: ENUM '{' enumerator_list '}'
-	| ENUM IDENTIFIER '{' enumerator_list '}'
-	| ENUM '{' enumerator_list ',' '}'
-	| ENUM IDENTIFIER '{' enumerator_list ',' '}'
-	| ENUM IDENTIFIER
+	: ENUM '{' enumerator_list '}'  {$$ = new Node("Enum specifier", $1, $3);}
+	| ENUM IDENTIFIER '{' enumerator_list '}' {$$ = new Node("Enum specifier", $1, $2, $4);}
+	| ENUM '{' enumerator_list ',' '}' {$$ = new Node("Enum specifier", $1, $3);}
+	| ENUM IDENTIFIER '{' enumerator_list ',' '}' {$$ = new Node("Enum specifier", $1, $2, $4);}
+	| ENUM IDENTIFIER {$$ = new Node("Enum specifier", $1, $2);}
 	;
 
 enumerator_list
-	: enumerator
-	| enumerator_list ',' enumerator
+	: enumerator {$$ = $1;}
+	| enumerator_list ',' enumerator {$$ = new Node("Enumerator list", $1, $3);}
 	;
 
 enumerator
-	: IDENTIFIER
-	| IDENTIFIER '=' constant_expression
+	: IDENTIFIER {$$ = $1;}
+	| IDENTIFIER '=' constant_expression {$$ = new Node("Enumerator", $1, $3);}
 	;
 
 type_qualifier
-	: CONST
-	| RESTRICT
-	| VOLATILE
+	: CONST {$$ = $1;}
+	| RESTRICT {$$ = $1;}
+	| VOLATILE {$$ = $1;}
 	;
 
 function_specifier
-	: INLINE
+	: INLINE {$$ = $1;}
 	;
 
 declarator
-	: pointer direct_declarator
-	| direct_declarator
+	: pointer direct_declarator {$$ = new Node("Delcarator", $1, $2);}
+	| direct_declarator {$$ = $1;}
 	;
 
 
