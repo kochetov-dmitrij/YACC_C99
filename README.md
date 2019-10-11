@@ -27,4 +27,38 @@ run.sh does the following:
 > Run the program\
 > `./parser input.txt`
 
+Input (input.txt):
+```
+int main()
+{
+  printf("Hello World\n");
+  return 0;
+}
+```
+
 Output:
+```
+===== Tree =====
+
+└──translation unit
+    └──Function definition
+        ├──int
+        ├──Direct declarator
+        │   └──Identifier
+        │       └──main
+        └──Block item list
+            └──Block item list
+                ├──Block item
+                │   └──Expression statement
+                │       └──Expression
+                │           └──Postfix expression
+                │               ├──Identifier
+                │               │   └──printf
+                │               └──String literal
+                │                   └──"Hello World\n"
+                └──Return
+                    └──Constant
+                        └──0
+
+```
+

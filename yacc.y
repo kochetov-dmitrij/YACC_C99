@@ -276,7 +276,7 @@ enumerator_list
 	;
 
 enumerator
-	: IDENTIFIER {$$ = $1;}
+	: IDENTIFIER {$$ = new Node("Identifier", $1);}
 	| IDENTIFIER '=' constant_expression {$$ = new Node("Enumerator", $1, $3);}
 	;
 
@@ -292,13 +292,13 @@ function_specifier
 
 declarator
 	: pointer direct_declarator {$$ = new Node("Delcarator", $1, $2);}
-	| direct_declarator {$$ = new Node("Direct declarator", $1);}
+	| direct_declarator {$$ = $1;}
 	;
 
 
 direct_declarator
-	: IDENTIFIER {$$ = $1;}
-	| '(' declarator ')' {$$ = new Node("Direct declarator", $2;}
+	: IDENTIFIER {$$ = new Node("Identifier", $1);}
+	| '(' declarator ')' {$$ = new Node("Direct declarator", $2);}
 	| direct_declarator '[' type_qualifier_list assignment_expression ']' {$$ = new Node("Direct declarator", $1, $3, $4);}
 	| direct_declarator '[' type_qualifier_list ']' {$$ = new Node("Direct declarator", $1, $3);}
 	| direct_declarator '[' assignment_expression ']' {$$ = new Node("Direct declarator", $1, $3);}
@@ -331,7 +331,7 @@ parameter_type_list
 	;
 
 parameter_list
-	: parameter_declaration {$$ = new Node("Parameter list", $1);}
+	: parameter_declaration {$$ = $1;}
 	| parameter_list ',' parameter_declaration {$$ = new Node("Parameter list", $1, $3);}
 	;
 
@@ -342,7 +342,7 @@ parameter_declaration
 	;
 
 identifier_list
-	: IDENTIFIER {$$ = $1;}
+	: IDENTIFIER {$$ = new Node("Identifier", $1);}
 	| identifier_list ',' IDENTIFIER {$$ = new Node("Identifier list", $1, $3);}
 	;
 
@@ -404,7 +404,7 @@ statement
 	| expression_statement {$$ = new Node("Expression statement", $1);}
 	| selection_statement {$$ = new Node("Selection statement", $1);}
 	| iteration_statement {$$ = new Node("Iteration statement", $1);}
-	| jump_statement {$$ = new Node("Jump statement", $1);}
+	| jump_statement {$$ = $1;}
 	;
 
 labeled_statement
@@ -425,7 +425,7 @@ block_item_list
 
 block_item
 	: declaration {$$ = new Node("Declaration", $1);}
-	| statement {$$ = new Node("Statement", $1);}
+	| statement {$$ = $1; }
 	;
 
 expression_statement
@@ -457,12 +457,12 @@ jump_statement
 	;
 
 translation_unit
-	: external_declaration {$$ = new Node("External declaration", $1); root = $$;}
- 	| translation_unit external_declaration {$$ = new Node("Translation unit", $1, $2); root = $$;}
+	: external_declaration {$$ = new Node("translation unit", $1); root = $$;}
+ 	| translation_unit external_declaration {$$ = new Node("external declaration", $1, $2); root = $$;}
 	;
 
 external_declaration
-	: function_definition {$$ = new Node("Function definition", $1);}
+	: function_definition {$$ = $1;}
 	| declaration {$$ = new Node("Declaration", $1);}
 	;
 

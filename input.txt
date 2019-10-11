@@ -1,4 +1,5 @@
-int yywrap(void)
+int main()
 {
-	return 1;
+  printf("Hello World\n");
+  return 0;
 }
