@@ -319,41 +319,41 @@ pointer
 	;
 
 type_qualifier_list
-	: type_qualifier
-	| type_qualifier_list type_qualifier
+	: type_qualifier {$$ = $1;}
+	| type_qualifier_list type_qualifier {$$ = new Node("Type qualifier list", $1, $2);}
 	;
 
 
 parameter_type_list
-	: parameter_list
-	| parameter_list ',' ELLIPSIS
+	: parameter_list {$$ = $1;}
+	| parameter_list ',' ELLIPSIS {$$ = new Node("Parameter type list", $1, $3);}
 	;
 
 parameter_list
-	: parameter_declaration
-	| parameter_list ',' parameter_declaration
+	: parameter_declaration {$$ = $1;}
+	| parameter_list ',' parameter_declaration {$$ = new Node("Parameter list", $1, $3);}
 	;
 
 parameter_declaration
-	: declaration_specifiers declarator
-	| declaration_specifiers abstract_declarator
-	| declaration_specifiers
+	: declaration_specifiers declarator {$$ = new Node("Parameter declaration", $1, $2);}
+	| declaration_specifiers abstract_declarator {$$ = new Node("Parameter declaration", $1, $2);}
+	| declaration_specifiers {$$ = $1;}
 	;
 
 identifier_list
-	: IDENTIFIER
-	| identifier_list ',' IDENTIFIER
+	: IDENTIFIER {$$ = $1;}
+	| identifier_list ',' IDENTIFIER {$$ = new Node("Identifier list", $1, $3);}
 	;
 
 type_name
-	: specifier_qualifier_list
-	| specifier_qualifier_list abstract_declarator
+	: specifier_qualifier_list {$$ = $1;}
+	| specifier_qualifier_list abstract_declarator {$$ = new Node("Type name", $1, $2);}
 	;
 
 abstract_declarator
-	: pointer
-	| direct_abstract_declarator
-	| pointer direct_abstract_declarator
+	: pointer {$$ = $1;}
+	| direct_abstract_declarator {$$ = $1;}
+	| pointer direct_abstract_declarator {$$ = new Node("Abstract declarator", $1, $2);}
 	;
 
 direct_abstract_declarator
@@ -371,16 +371,16 @@ direct_abstract_declarator
 	;
 
 initializer
-	: assignment_expression
-	| '{' initializer_list '}'
-	| '{' initializer_list ',' '}'
+	: assignment_expression {$$ = $1;}
+	| '{' initializer_list '}' {$$ = new Node("Initializer", $2);}
+	| '{' initializer_list ',' '}' {$$ = new Node("Initializer", $2);}
 	;
 
 initializer_list
-	: initializer
-	| designation initializer
-	| initializer_list ',' initializer
-	| initializer_list ',' designation initializer
+	: initializer {$$ = $1;}
+	| designation initializer {$$ = new Node("Initializer list", $1, $2);}
+	| initializer_list ',' initializer {$$ = new Node("Initializer list", $1, $3);}
+	| initializer_list ',' designation initializer {$$ = new Node("Initializer list", $1, $3, $4);}
 	;
 
 designation
@@ -388,8 +388,8 @@ designation
 	;
 
 designator_list
-	: designator
-	| designator_list designator
+	: designator {$$ = $1;}
+	| designator_list designator {$$ = new Node("Designator list", $1, $2);}
 	;
 
 designator
@@ -398,12 +398,12 @@ designator
 	;
 
 statement
-	: labeled_statement
-	| compound_statement
-	| expression_statement
-	| selection_statement
-	| iteration_statement
-	| jump_statement
+	: labeled_statement {$$ = $1;}
+	| compound_statement {$$ = $1;}
+	| expression_statement {$$ = $1;}
+	| selection_statement {$$ = $1;}
+	| iteration_statement {$$ = $1;}
+	| jump_statement {$$ = $1;}
 	;
 
 labeled_statement
@@ -418,13 +418,13 @@ compound_statement
 	;
 
 block_item_list
-	: block_item
-	| block_item_list block_item
+	: block_item {$$ = $1;}
+	| block_item_list block_item {$$ = new Node("Block item list", $1, $2);}
 	;
 
 block_item
-	: declaration
-	| statement
+	: declaration {$$ = $1;}
+	| statement {$$ = $1;}
 	;
 
 expression_statement
@@ -456,23 +456,23 @@ jump_statement
 	;
 
 translation_unit
-	: external_declaration
-	| translation_unit external_declaration
+	: external_declaration {$$ = $1}
+ 	| translation_unit external_declaration {$$ = new Node("Translation unit", $1, $2);}
 	;
 
 external_declaration
-	: function_definition
-	| declaration
+	: function_definition {$$ = $1}
+	| declaration {$$ = $1}
 	;
 
 function_definition
-	: declaration_specifiers declarator declaration_list compound_statement
-	| declaration_specifiers declarator compound_statement
+	: declaration_specifiers declarator declaration_list compound_statement {$$ = new Node("Function definition", $1, $2, $3, $4);}
+	| declaration_specifiers declarator compound_statement {$$ = new Node("Declaration list", $1, $2, $3);}
 	;
 
 declaration_list
-	: declaration
-	| declaration_list declaration
+	: declaration {$$ = $1}
+	| declaration_list declaration {$$ = new Node("Declaration list", $1, $2);}
 	;
 
 
