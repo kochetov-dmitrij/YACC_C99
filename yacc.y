@@ -357,17 +357,17 @@ abstract_declarator
 	;
 
 direct_abstract_declarator
-	: '(' abstract_declarator ')'
-	| '[' ']'
-	| '[' assignment_expression ']'
-	| direct_abstract_declarator '[' ']'
-	| direct_abstract_declarator '[' assignment_expression ']'
-	| '[' '*' ']'
-	| direct_abstract_declarator '[' '*' ']'
-	| '(' ')'
-	| '(' parameter_type_list ')'
-	| direct_abstract_declarator '(' ')'
-	| direct_abstract_declarator '(' parameter_type_list ')'
+	: '(' abstract_declarator ')' {$$ = $2}
+	| '[' ']' {$$ = new Node("Empty square brackets");}
+	| '[' assignment_expression ']' {$$ = new Node("Square brackets with AE");}
+	| direct_abstract_declarator '[' ']' {$$ = new Node("Empty square DAD");}
+	| direct_abstract_declarator '[' assignment_expression ']' {$$ = new Node("Square DAD", $3);}
+	| '[' '*' ']' {$$ = new Node("Square brackets with pointer");}
+	| direct_abstract_declarator '[' '*' ']' {$$ = new Node("DAD with pointer");}
+	| '(' ')' {$$ = new Node("Empty parentheses");}
+	| '(' parameter_type_list ')' {$$ = new Node("Parentheses"), $2;}
+	| direct_abstract_declarator '(' ')' {$$ = new Node("DAD", $3);}
+	| direct_abstract_declarator '(' parameter_type_list ')' {$$ = new Node("DAD", $3);}
 	;
 
 initializer
@@ -384,7 +384,7 @@ initializer_list
 	;
 
 designation
-	: designator_list '='
+	: designator_list '=' {$$ = $1;}
 	;
 
 designator_list
@@ -393,8 +393,8 @@ designator_list
 	;
 
 designator
-	: '[' constant_expression ']'
-	| '.' IDENTIFIER
+	: '[' constant_expression ']' {$$ = new Node("Array Element", $2);}
+	| '.' IDENTIFIER  {$$ = new Node("Inner Characteristic", $2);}
 	;
 
 statement
@@ -407,14 +407,14 @@ statement
 	;
 
 labeled_statement
-	: IDENTIFIER ':' statement
-	| CASE constant_expression ':' statement
-	| DEFAULT ':' statement
+	: IDENTIFIER ':' statement {$$ = new Node("Labled statement ", $1, $3);}
+	| CASE constant_expression ':' statement {$$ = new Node("Case ", $2, $4);}
+	| DEFAULT ':' statement {$$ = new Node("Default ", $3);}
 	;
 
 compound_statement
-	: '{' '}'
-	| '{' block_item_list '}'
+	: '{' '}' {$$ = new Node("Empty Declaration", $1, $2);}
+	| '{' block_item_list '}' {$$ = $1;}
 	;
 
 block_item_list
@@ -429,30 +429,30 @@ block_item
 
 expression_statement
 	: ';'
-	| expression ';'
+	| expression ';' {$$ = $1;}
 	;
 
 selection_statement
-	: IF '(' expression ')' statement
-	| IF '(' expression ')' statement ELSE statement
-	| SWITCH '(' expression ')' statement
+	: IF '(' expression ')' statement {$$ = new Node("If", $3, $5);}
+	| IF '(' expression ')' statement ELSE statement {$$ = new Node("IfElse", $3, $5, $7);}
+	| SWITCH '(' expression ')' statement {$$ = new Node("Switch", $3, $5);}
 	;
 
 iteration_statement
-	: WHILE '(' expression ')' statement
-	| DO statement WHILE '(' expression ')' ';'
-	| FOR '(' expression_statement expression_statement ')' statement
-	| FOR '(' expression_statement expression_statement expression ')' statement
-	| FOR '(' declaration expression_statement ')' statement
-	| FOR '(' declaration expression_statement expression ')' statement
+	: WHILE '(' expression ')' statement {$$ = new Node("While", $3, $5);}
+	| DO statement WHILE '(' expression ')' ';' {$$ = new Node("DoWhile", $2, $5);}
+	| FOR '(' expression_statement expression_statement ')' statement {$$ = new Node("For", $3, $4, $6);}
+	| FOR '(' expression_statement expression_statement expression ')' statement {$$ = new Node("For", $3, $4, $5, $7);}
+	| FOR '(' declaration expression_statement ')' statement {$$ = new Node("For", $3, $4, $6);}
+	| FOR '(' declaration expression_statement expression ')' statement {$$ = new Node("For", $3, $4, $5, $7);}
 	;
 
 jump_statement
-	: GOTO IDENTIFIER ';'
-	| CONTINUE ';'
-	| BREAK ';'
-	| RETURN ';'
-	| RETURN expression ';'
+	: GOTO IDENTIFIER ';' {$$ = new Node("Goto", $1);}
+	| CONTINUE ';' {$$ = new Node("Continue");}
+	| BREAK ';' {$$ = new Node("Break");}
+	| RETURN ';' {$$ = new Node("Return");}
+	| RETURN expression ';' {$$ = new Node("Return", $2);}
 	;
 
 translation_unit
