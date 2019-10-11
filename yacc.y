@@ -6,6 +6,10 @@
 
 #include "node.h"
 
+int yylex(void);
+extern "C" int yyparse();
+extern "C" FILE *yyin;
+
 #define YYSTYPE Node*
 
 void yyerror(char const *s);
@@ -29,7 +33,7 @@ void yyerror(char const *s);
 %%
 
 primary_expression
-	: IDENTIFIER {$$ = new Node("Identifier", $1);}
+	: IDENTIFIER {std::cout<<"lol kek"; $$ = new Node("Identifier", $1);}
 	| CONSTANT {$$ = new Node("Constant", $1);}
 	| STRING_LITERAL {$$ = new Node("String literal", $1);}
 	| '(' expression ')' {$$ = new Node("Expression", $1);}
@@ -72,12 +76,12 @@ unary_operator
 	;
 
 cast_expression
-	: unary_expression {$$ = $1}
+	: unary_expression {$$ = $1;}
 	| '(' type_name ')' cast_expression {$$ = new Node("Cast", $1);}
 	;
 
 multiplicative_expression
-	: cast_expression {$$ = $1}
+	: cast_expression {$$ = $1;}
 	| multiplicative_expression '*' cast_expression {$$ = new Node("Multiply", $1, $2);}
 	| multiplicative_expression '/' cast_expression {$$ = new Node("Divide", $1, $2);}
 	| multiplicative_expression '%' cast_expression {$$ = new Node("Modulo", $1, $2);}
@@ -85,7 +89,7 @@ multiplicative_expression
 
 additive_expression
 	: multiplicative_expression {$$ = $1;}
-	| additive_expression '+' multiplicative_expression {$$ = new Node("Add", $1, $2);}
+	| additive_expression '+' multiplicative_expression {std::cout<<"smth"; $$ = new Node("Add", $1, $2);}
 	| additive_expression '-' multiplicative_expression {$$ = new Node("Sub", $1, $2);}
 	;
 
@@ -482,4 +486,18 @@ void yyerror(char const *s)
 {
 	fflush(stdout);
 	printf("\n%*s\n%*s\n", column, "^", column, s);
+}
+
+int main(int argc, char* argv[])
+{
+    std::cout << argv[1] << std::endl;
+    if (argc > 1) {
+        FILE *fl;
+        fl = fopen(argv[1],"r");
+        yyin = fl;
+    }
+
+    yyparse();
+
+    return 0;
 }

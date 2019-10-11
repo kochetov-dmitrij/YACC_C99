@@ -8,7 +8,8 @@ IS                      ((u|U)|(u|U)?(l|L|ll|LL)|(l|L|ll|LL)(u|U))
 
 %{
 #include <stdio.h>
-#include "yacc.h"
+#include "yacc.hpp"
+#include <iostream>
 
 void count(void);
 int check_type(void);
@@ -132,18 +133,17 @@ int yywrap(void)
 	return 1;
 }
 
-
 void comment(void)
 {
 	char c, prev = 0;
   
-	while ((c = input()) != 0)      /* (EOF maps to 0) */
+	while ((c = yyinput()) != 0)      /* (EOF maps to 0) */
 	{
 		if (c == '/' && prev == '*')
 			return;
 		prev = c;
 	}
-	error("unterminated comment");
+	std::cerr << "Unterminted comment."<<yytext << std::endl; exit(1);
 }
 
 
@@ -167,18 +167,5 @@ void count(void)
 
 int check_type(void)
 {
-/*
-* pseudo code --- this is what it should check
-*
-*	if (yytext == type_name)
-*		return TYPE_NAME;
-*
-*	return IDENTIFIER;
-*/
-
-/*
-*	it actually will only return IDENTIFIER
-*/
-
 	return IDENTIFIER;
 }
