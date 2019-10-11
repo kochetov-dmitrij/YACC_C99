@@ -60,12 +60,12 @@ unary_expression
 	;
 
 unary_operator
-	: '&' {$$ = $1;}
-	| '*' {$$ = $1;}
-	| '+' {$$ = $1;}
-	| '-' {$$ = $1;}
-	| '~' {$$ = $1;}
-	| '!' {$$ = $1;}
+	: '&' {$$ = new Node("Unary and");}
+	| '*' {$$ = new Node("Pointer");}
+	| '+' {$$ = new Node("Unary plus");}
+	| '-' {$$ = new Node("Unary minus");}
+	| '~' {$$ = new Node("Invert bits");}
+	| '!' {$$ = new Node("Not");}
 	;
 
 cast_expression
