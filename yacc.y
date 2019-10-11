@@ -314,9 +314,9 @@ direct_declarator
 
 pointer
 	: '*' {$$ = $1}
-	| '*' type_qualifier_list{$$ = new Node("Pointer", $1, $2;}
-	| '*' pointer {$$ = new Node("Pointer", $1, $2;}
-	| '*' type_qualifier_list pointer{$$ = new Node("Pointer", $1, $2, $3;}
+	| '*' type_qualifier_list{$$ = new Node("Pointer", $1, $2);}
+	| '*' pointer {$$ = new Node("Pointer", $1, $2);}
+	| '*' type_qualifier_list pointer{$$ = new Node("Pointer", $1, $2, $3);}
 	;
 
 type_qualifier_list
@@ -366,7 +366,7 @@ direct_abstract_declarator
 	| '[' '*' ']' {$$ = new Node("Square brackets with pointer");}
 	| direct_abstract_declarator '[' '*' ']' {$$ = new Node("DAD with pointer");}
 	| '(' ')' {$$ = new Node("Empty parentheses");}
-	| '(' parameter_type_list ')' {$$ = new Node("Parentheses"), $2;}
+	| '(' parameter_type_list ')' {$$ = new Node("Parentheses", $2);}
 	| direct_abstract_declarator '(' ')' {$$ = new Node("DAD", $3);}
 	| direct_abstract_declarator '(' parameter_type_list ')' {$$ = new Node("DAD", $3);}
 	;
@@ -457,8 +457,8 @@ jump_statement
 	;
 
 translation_unit
-	: external_declaration {$$ = $1}
- 	| translation_unit external_declaration {$$ = new Node("Translation unit", $1, $2);}
+	: external_declaration {$$ = $1; root = $$}
+ 	| translation_unit external_declaration {$$ = new Node("Translation unit", $1, $2); root = $$}
 	;
 
 external_declaration
