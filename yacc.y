@@ -236,7 +236,7 @@ struct_or_union
 	;
 
 struct_declaration_list
-	: struct_declaration {$$ = $1;}
+	: struct_declaration {$$ = new Node("Struct declaration", $1);}
 	| struct_declaration_list struct_declaration {$$ = new Node("Struct declaration list", $1, $2);}
 	;
 
@@ -245,14 +245,14 @@ struct_declaration
 	;
 
 specifier_qualifier_list
-	: type_specifier specifier_qualifier_list {$$ = new Node("Specifier qualifier list", $1, $2);}
-	| type_specifier {$$ = $1;}
-	| type_qualifier specifier_qualifier_list {$$ = new Node("Specifier qualifier list", $1, $2);}
-	| type_qualifier {$$ = $1;}
+	: type_specifier specifier_qualifier_list {$$ = new Node("Specifier list", $1, $2);}
+	| type_specifier {$$ = new Node("Specifier", $1);}
+	| type_qualifier specifier_qualifier_list {$$ = new Node("Qualifier list", $1, $2);}
+	| type_qualifier {$$ = new Node("Qualifier", $1);}
 	;
 
 struct_declarator_list
-	: struct_declarator {$$ = $1;}
+	: struct_declarator {$$ = new Node("Struct declarator", $1);}
 	| struct_declarator_list ',' struct_declarator {$$ = new Node("Struct declarator list", $1, $3);}
 	;
 
