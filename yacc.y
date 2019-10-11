@@ -1,12 +1,17 @@
 %{
 #include <cstdio>
+#include <stdio.h>
 #include <iostream>
 #include <string>
 #include "string.h"
 #include "node.h"
+
+int yylex(void);
+extern "C" int yyparse();
+extern "C" FILE *yyin;
+
 #define YYSTYPE Node*
 
-int yylex();
 void yyerror(char const *s);
 %}
 
@@ -28,7 +33,7 @@ void yyerror(char const *s);
 %%
 
 primary_expression
-	: IDENTIFIER {$$ = new Node("Identifier", $1);}
+	: IDENTIFIER {std::cout<<"lol kek"; $$ = new Node("Identifier", $1);}
 	| CONSTANT {$$ = new Node("Constant", $1);}
 	| STRING_LITERAL {$$ = new Node("String literal", $1);}
 	| '(' expression ')' {$$ = new Node("Expression", $1);}
@@ -71,12 +76,12 @@ unary_operator
 	;
 
 cast_expression
-	: unary_expression {$$ = $1}
+	: unary_expression {$$ = $1;}
 	| '(' type_name ')' cast_expression {$$ = new Node("Cast", $1);}
 	;
 
 multiplicative_expression
-	: cast_expression {$$ = $1}
+	: cast_expression {$$ = $1;}
 	| multiplicative_expression '*' cast_expression {$$ = new Node("Multiply", $1, $2);}
 	| multiplicative_expression '/' cast_expression {$$ = new Node("Divide", $1, $2);}
 	| multiplicative_expression '%' cast_expression {$$ = new Node("Modulo", $1, $2);}
@@ -84,7 +89,7 @@ multiplicative_expression
 
 additive_expression
 	: multiplicative_expression {$$ = $1;}
-	| additive_expression '+' multiplicative_expression {$$ = new Node("Add", $1, $2);}
+	| additive_expression '+' multiplicative_expression {std::cout<<"smth"; $$ = new Node("Add", $1, $2);}
 	| additive_expression '-' multiplicative_expression {$$ = new Node("Sub", $1, $2);}
 	;
 
@@ -472,7 +477,7 @@ declaration_list
 
 
 %%
-extern *char yytext;
+extern char yytext[];
 extern int column;
 
 void yyerror(char const *s)
@@ -481,18 +486,16 @@ void yyerror(char const *s)
 	printf("\n%*s\n%*s\n", column, "^", column, s);
 }
 
-int main(int argc ,char *argv[]){
-        FILE *f = fopen(argv[1], "r");
-        fseek(f, 0, SEEK_END);
-        long fsize = ftell(f);
-        fseek(f, 0, SEEK_SET);
+int main(int argc, char* argv[])
+{
+    std::cout << argv[1] << std::endl;
+    if (argc > 1) {
+        FILE *fl;
+        fl = fopen(argv[1],"r");
+        yyin = fl;
+    }
 
-        yytext = (char *)malloc(fsize + 1);
-        fread(yytext, fsize, 1, f);
-        fclose(f);
-        yytext[fsize] = 0;
+    yyparse();
 
-	yyparse();
-	fclose(yyin);
-	return 0;
+    return 0;
 }

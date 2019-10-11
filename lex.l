@@ -9,6 +9,7 @@ IS                      ((u|U)|(u|U)?(l|L|ll|LL)|(l|L|ll|LL)(u|U))
 %{
 #include <stdio.h>
 #include "yacc.hpp"
+#include <iostream>
 
 void count(void);
 void comment(void);
@@ -131,7 +132,6 @@ int yywrap(void)
 {
 	return 1;
 }
-
 
 void comment(void)
 {
