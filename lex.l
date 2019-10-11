@@ -1,3 +1,13 @@
+%{
+#include <stdio.h>
+#include "yacc.hpp"
+#include <iostream>
+
+void count(void);
+void comment(void);
+extern void yyerror(const char *);
+%}
+
 D			[0-9]
 L			[a-zA-Z_]
 H			[a-fA-F0-9]
@@ -6,19 +16,9 @@ P                       ([Pp][+-]?{D}+)
 FS			(f|F|l|L)
 IS                      ((u|U)|(u|U)?(l|L|ll|LL)|(l|L|ll|LL)(u|U))
 
-%{
-#include <stdio.h>
-#include "yacc.h"
-
-void count(void);
-int check_type(void);
-void comment(void);
-%}
-
 %%
-"/*"			{ comment(); }
-"//"[^\n]*              { /* consume //-comment */ }
-
+"/*"            { comment(); }
+"//"[^\n]*      { }
 
 "auto"			{ count(); return(AUTO); }
 "_Bool"			{ count(); return(BOOL); }
@@ -38,7 +38,7 @@ void comment(void);
 "for"			{ count(); return(FOR); }
 "goto"			{ count(); return(GOTO); }
 "if"			{ count(); return(IF); }
-"_Imaginary"		{ count(); return(IMAGINARY); }
+"_Imaginary"    { count(); return(IMAGINARY); }
 "inline"		{ count(); return(INLINE); }
 "int"			{ count(); return(INT); }
 "long"			{ count(); return(LONG); }
@@ -58,19 +58,19 @@ void comment(void);
 "volatile"		{ count(); return(VOLATILE); }
 "while"			{ count(); return(WHILE); }
 
-{L}({L}|{D})*		{ count(); return(check_type()); }
+{L}({L}|{D})*		{ count(); return(IDENTIFIER); }
 
 0[xX]{H}+{IS}?		{ count(); return(CONSTANT); }
 0[0-7]*{IS}?		{ count(); return(CONSTANT); }
 [1-9]{D}*{IS}?		{ count(); return(CONSTANT); }
 L?'(\\.|[^\\'\n])+'	{ count(); return(CONSTANT); }
 
-{D}+{E}{FS}?		{ count(); return(CONSTANT); }
-{D}*"."{D}+{E}?{FS}?	{ count(); return(CONSTANT); }
-{D}+"."{D}*{E}?{FS}?	{ count(); return(CONSTANT); }
-0[xX]{H}+{P}{FS}?	{ count(); return(CONSTANT); }
-0[xX]{H}*"."{H}+{P}?{FS}?     { count(); return(CONSTANT); }
-0[xX]{H}+"."{H}*{P}?{FS}?     { count(); return(CONSTANT); }
+{D}+{E}{FS}?		        { count(); return(CONSTANT); }
+{D}*"."{D}+{E}?{FS}?	    { count(); return(CONSTANT); }
+{D}+"."{D}*{E}?{FS}?	    { count(); return(CONSTANT); }
+0[xX]{H}+{P}{FS}?	        { count(); return(CONSTANT); }
+0[xX]{H}*"."{H}+{P}?{FS}?   { count(); return(CONSTANT); }
+0[xX]{H}+"."{H}*{P}?{FS}?   { count(); return(CONSTANT); }
 
 
 L?\"(\\.|[^\\"\n])*\"	{ count(); return(STRING_LITERAL); }
@@ -97,33 +97,33 @@ L?\"(\\.|[^\\"\n])*\"	{ count(); return(STRING_LITERAL); }
 ">="			{ count(); return(GE_OP); }
 "=="			{ count(); return(EQ_OP); }
 "!="			{ count(); return(NE_OP); }
-";"			{ count(); return(';'); }
+";"		    	{ count(); return(';'); }
 ("{"|"<%")		{ count(); return('{'); }
 ("}"|"%>")		{ count(); return('}'); }
-","			{ count(); return(','); }
-":"			{ count(); return(':'); }
-"="			{ count(); return('='); }
-"("			{ count(); return('('); }
-")"			{ count(); return(')'); }
+","		    	{ count(); return(','); }
+":"		    	{ count(); return(':'); }
+"="		    	{ count(); return('='); }
+"("		    	{ count(); return('('); }
+")"		    	{ count(); return(')'); }
 ("["|"<:")		{ count(); return('['); }
 ("]"|":>")		{ count(); return(']'); }
-"."			{ count(); return('.'); }
-"&"			{ count(); return('&'); }
-"!"			{ count(); return('!'); }
-"~"			{ count(); return('~'); }
-"-"			{ count(); return('-'); }
-"+"			{ count(); return('+'); }
-"*"			{ count(); return('*'); }
-"/"			{ count(); return('/'); }
-"%"			{ count(); return('%'); }
-"<"			{ count(); return('<'); }
-">"			{ count(); return('>'); }
-"^"			{ count(); return('^'); }
-"|"			{ count(); return('|'); }
-"?"			{ count(); return('?'); }
+"."		    	{ count(); return('.'); }
+"&"			    { count(); return('&'); }
+"!"	    		{ count(); return('!'); }
+"~"	    		{ count(); return('~'); }
+"-"	    		{ count(); return('-'); }
+"+"	    		{ count(); return('+'); }
+"*"	    		{ count(); return('*'); }
+"/"	    		{ count(); return('/'); }
+"%"	    		{ count(); return('%'); }
+"<"	    		{ count(); return('<'); }
+">"	    		{ count(); return('>'); }
+"^"	    		{ count(); return('^'); }
+"|"		    	{ count(); return('|'); }
+"?"		    	{ count(); return('?'); }
 
 [ \t\v\n\f]		{ count(); }
-.			{ /* Add code to complain about unmatched characters */ }
+.			    { yyerror("Unmatched characters"); return 0; }
 
 %%
 
@@ -132,18 +132,17 @@ int yywrap(void)
 	return 1;
 }
 
-
 void comment(void)
 {
 	char c, prev = 0;
   
-	while ((c = input()) != 0)      /* (EOF maps to 0) */
+	while ((c = yyinput()) != 0)      /* (EOF maps to 0) */
 	{
 		if (c == '/' && prev == '*')
 			return;
 		prev = c;
 	}
-	error("unterminated comment");
+	yyerror("Unterminated comment");
 }
 
 
@@ -160,13 +159,5 @@ void count(void)
 			column += 8 - (column % 8);
 		else
 			column++;
-
 	ECHO;
-}
-
-
-int check_type(void)
-{
-
-	return IDENTIFIER;
 }

@@ -1,10 +1,14 @@
 %{
 #include <cstdio>
+#include <stdio.h>
 #include <iostream>
 #include <string>
 #include "string.h"
-
 #include "node.h"
+
+int yylex(void);
+extern "C" int yyparse();
+extern "C" FILE *yyin;
 
 #define YYSTYPE Node*
 
@@ -72,7 +76,7 @@ unary_operator
 	;
 
 cast_expression
-	: unary_expression {$$ = $1}
+	: unary_expression {$$ = $1;}
 	| '(' type_name ')' cast_expression {$$ = new Node("Cast", $1);}
 	;
 
@@ -473,8 +477,6 @@ declaration_list
 
 
 %%
-#include <stdio.h>
-
 extern char yytext[];
 extern int column;
 
@@ -482,4 +484,15 @@ void yyerror(char const *s)
 {
 	fflush(stdout);
 	printf("\n%*s\n%*s\n", column, "^", column, s);
+}
+
+int main(int argc, char* argv[])
+{
+    if (argc != 2) {
+    	std::cout << "Expected 1 argument: Pass filename as an argument" << std::endl;
+    	return 1;
+    }
+    yyin = fopen(argv[1],"r");
+    yyparse();
+    return 0;
 }
