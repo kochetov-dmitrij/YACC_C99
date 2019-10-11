@@ -467,7 +467,7 @@ external_declaration
 
 function_definition
 	: declaration_specifiers declarator declaration_list compound_statement {$$ = new Node("Function definition", $1, $2, $3, $4);}
-	| declaration_specifiers declarator compound_statement {$$ = new Node("Declaration list", $1, $2, $3);}
+	| declaration_specifiers declarator compound_statement {$$ = new Node("Function definition", $1, $2, $3);}
 	;
 
 declaration_list
