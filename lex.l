@@ -3,6 +3,7 @@
 #include "yacc.hpp"
 #include "node.h"
 #include <iostream>
+#define YYSTYPE Node*
 
 void count(void);
 void comment(void);
@@ -21,7 +22,7 @@ IS          ((u|U)|(u|U)?(l|L|ll|LL)|(l|L|ll|LL)(u|U))
 "/*"            { comment(); }
 "//"[^\n]*      { }
 
-"auto"			{ count(); return(AUTO); }
+"auto"			{ yylval = new Node(yytext); count(); return(AUTO); }
 "_Bool"			{ count(); return(BOOL); }
 "break"			{ count(); return(BREAK); }
 "case"			{ count(); return(CASE); }

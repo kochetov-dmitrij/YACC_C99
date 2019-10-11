@@ -82,7 +82,7 @@ cast_expression
 	;
 
 multiplicative_expression
-	: cast_expression {$$ = $1}
+	: cast_expression {$$ = $1;}
 	| multiplicative_expression '*' cast_expression {$$ = new Node("Multiply", $1, $3);}
 	| multiplicative_expression '/' cast_expression {$$ = new Node("Divide", $1, $3);}
 	| multiplicative_expression '%' cast_expression {$$ = new Node("Modulo", $1, $3);}
@@ -173,7 +173,7 @@ constant_expression
 	;
 
 declaration
-	: declaration_specifiers ';' {$$ = $1}
+	: declaration_specifiers ';' {$$ = $1;}
 	| declaration_specifiers init_declarator_list ';' {$$ = new Node("Declaration", $1, $2);}
 	;
 
@@ -297,8 +297,8 @@ declarator
 
 
 direct_declarator
-	: IDENTIFIER {$$ = $1}
-	| '(' declarator ')' {$$ = $1}
+	: IDENTIFIER {$$ = $1;}
+	| '(' declarator ')' {$$ = $1;}
 	| direct_declarator '[' type_qualifier_list assignment_expression ']' {$$ = new Node("Direct declarator", $1, $3, $4);}
 	| direct_declarator '[' type_qualifier_list ']' {$$ = new Node("Direct declarator", $1, $3);}
 	| direct_declarator '[' assignment_expression ']' {$$ = new Node("Direct declarator", $1, $3);}
@@ -313,7 +313,7 @@ direct_declarator
 	;
 
 pointer
-	: '*' {$$ = $1}
+	: '*' {$$ = $1;}
 	| '*' type_qualifier_list{$$ = new Node("Pointer", $1, $2);}
 	| '*' pointer {$$ = new Node("Pointer", $1, $2);}
 	| '*' type_qualifier_list pointer{$$ = new Node("Pointer", $1, $2, $3);}
@@ -358,7 +358,7 @@ abstract_declarator
 	;
 
 direct_abstract_declarator
-	: '(' abstract_declarator ')' {$$ = $2}
+	: '(' abstract_declarator ')' {$$ = $2;}
 	| '[' ']' {$$ = new Node("Empty square brackets");}
 	| '[' assignment_expression ']' {$$ = new Node("Square brackets with AE");}
 	| direct_abstract_declarator '[' ']' {$$ = new Node("Empty square DAD");}
@@ -457,13 +457,13 @@ jump_statement
 	;
 
 translation_unit
-	: external_declaration {$$ = $1; root = $$}
- 	| translation_unit external_declaration {$$ = new Node("Translation unit", $1, $2); root = $$}
+	: external_declaration {$$ = $1; root = $$;}
+ 	| translation_unit external_declaration {$$ = new Node("Translation unit", $1, $2); root = $$;}
 	;
 
 external_declaration
-	: function_definition {$$ = $1}
-	| declaration {$$ = $1}
+	: function_definition {$$ = $1;}
+	| declaration {$$ = $1;}
 	;
 
 function_definition
@@ -472,7 +472,7 @@ function_definition
 	;
 
 declaration_list
-	: declaration {$$ = $1}
+	: declaration {$$ = $1;}
 	| declaration_list declaration {$$ = new Node("Declaration list", $1, $2);}
 	;
 
